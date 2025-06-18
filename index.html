@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            color: #374151; /* Dark gray text */
+        }
+        .tab-active {
+            border-color: #4f46e5; /* Indigo border for active tab */
+            background-color: #eef2ff; /* Light indigo background for active tab */
+            color: #4f46e5; /* Indigo text for active tab */
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .countdown-timer {
+            background-color: rgba(0, 0, 0, 0.05); /* Slightly transparent dark background */
+        }
+        /* Styles for all modals (Telegram Popup and Login Modal) */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.6); /* Darker overlay for modals */
+        }
+        .modal-content {
+            animation: slideUp 0.4s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        
+        <!-- Header Section -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-indigo-700">University Hub</h1>
+            <p class="text-gray-600 mt-2">Your central portal for academic tools and updates.</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="mb-8">
+            <nav class="flex border-b border-gray-300 justify-center">
+                <button id="tab-deadlines" class="tab-button py-2 px-6 font-semibold text-gray-600 border-b-2 border-transparent hover:text-indigo-600 transition-colors duration-300" onclick="showTab('deadlines')">Approaching Deadlines</button>
+                <button id="tab-timetable" class="tab-button py-2 px-6 font-semibold text-gray-600 border-b-2 border-transparent hover:text-indigo-600 transition-colors duration-300" onclick="showTab('timetable')">Weekly Timetable</button>
+                <button id="tab-gpa-login" class="tab-button py-2 px-6 font-semibold text-gray-600 border-b-2 border-transparent hover:text-indigo-600 transition-colors duration-300" onclick="redirectToGPACalculator()">GPA Calculator</button>
+            </nav>
+        </div>
+        
+        <!-- Main Content Area -->
+        <main>
+            <!-- Upcoming Deadlines Section -->
+            <section id="content-deadlines" class="tab-content hidden fade-in">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-700">Approaching Deadlines (Next 48 Hours)</h2>
+                <div id="deadlines-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Deadlines will be loaded here by JavaScript -->
+                    <p id="deadlines-loader" class="text-center text-gray-500 col-span-full">Fetching data from Google Sheets...</p>
+                </div>
+            </section>
+
+            <!-- Time Table Section -->
+            <div id="content-timetable" class="tab-content hidden fade-in">
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4 text-center text-indigo-600">Weekly Timetable</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 rounded-l-lg">Time</th>
+                                    <th scope="col" class="px-6 py-3">Monday</th>
+                                    <th scope="col" class="px-6 py-3">Tuesday</th>
+                                    <th scope="col" class="px-6 py-3">Wednesday</th>
+                                    <th scope="col" class="px-6 py-3">Thursday</th>
+                                    <th scope="col" class="px-6 py-3 rounded-r-lg">Friday</th>
+                                </tr>
+                            </thead>
+                            <tbody id="timetable-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Telegram Popup Modal -->
+    <div id="telegram-popup" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl text-center modal-content">
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Join Our Community!</h3>
+            <p class="text-gray-600 mb-6">Get all the latest university updates, event reminders, and exam alerts instantly by joining our Telegram group.</p>
+            <a id="telegram-join-button" href="#" target="_blank" class="inline-block bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold text-lg py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300 animate-pulse">
+                Join our Telegram
+            </a>
+            <button onclick="closeTelegramPopup()" class="block w-full text-center text-gray-500 mt-6 hover:text-gray-800">Maybe later</button>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-white w-full max-w-sm p-6 rounded-lg shadow-xl modal-content">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Login / Sign Up</h3>
+            <div class="mb-4">
+                <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username:</label>
+                <input type="text" id="username" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Your username">
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
+                <input type="password" id="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="************">
+            </div>
+            <p id="login-error-message" class="text-red-500 text-sm text-center mb-4 hidden">Invalid username or password.</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="performLogin()" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition-colors duration-300">
+                    Login
+                </button>
+                <button onclick="closeLoginModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition-colors duration-300">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===================================================================================
+        // --- CONFIGURATION (UPDATE YOUR INFORMATION HERE) ---
+        // ===================================================================================
+
+        // 1. Google Sheets "Publish to the web" CSV Links for Deadlines/Events.
+        // Make sure to publish your Google Sheets to the web as CSV.
+        const examsSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJuZXEZTrQBuOUQMPI0bJmISflwNkF8Bb7AZd7v-eEeFg_KiGcfg1rFDx0oSv8E-bv94nAmv-acAEh/pub?gid=912727353&single=true&output=csv'; // Example: 2PACX-1vR_aBcDeF123...
+        const assignmentsSheetUrl = 'https://docs.google.com/spreadsheets/d/e/YOUR_ASSIGNMENTS_SHEET_ID/pub?output=csv';
+        const eventsSheetUrl = 'https://docs.google.com/spreadsheets/d/e/YOUR_EVENTS_SHEET_ID/pub?output=csv';
+
+        // 2. Google Sheet "Publish to the web" CSV Link for User Login Data.
+        // This sheet should have 'Username' and 'Password' as the first row headers.
+        const usersSheetUrl = 'https://docs.google.com/spreadsheets/d/e/YOUR_USERS_SHEET_ID/pub?output=csv'; // Example: 2PACX-1vS_gHiJkL456...
+
+        // 3. Your Telegram channel link.
+        const telegramChannelUrl = 'https://t.me/your_channel_name';
+
+        // 4. Weekly Timetable Data.
+        const timeTableData = [
+            { time: "08:00 - 10:00", mon: "SENG 11111: Intro to Programming", tue: "", wed: "SENG 11111: Intro to Programming", thu: "", fri: "" },
+            { time: "10:00 - 12:00", mon: "", tue: "SENG 11112: F.O.E", wed: "", thu: "SENG 11112: F.O.E", fri: "" },
+            { time: "12:00 - 13:00", mon: "LUNCH", tue: "LUNCH", wed: "LUNCH", thu: "LUNCH", fri: "LUNCH" },
+            { time: "13:00 - 15:00", mon: "SENG 11121: Project Management", tue: "SENG 11122: Data Structures", wed: "", thu: "SENG 11121: Project Management", fri: "SENG 11122: Data Structures" },
+            { time: "15:00 - 17:00", mon: "", tue: "", wed: "SENG 11133: Com Skills", thu: "", fri: "SENG 11133: Com Skills" },
+        ];
+
+
+        // ===================================================================================
+        // --- WEBSITE FUNCTIONALITY (DO NOT MODIFY BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING) ---
+        // ===================================================================================
+
+        const deadlinesContainer = document.getElementById('deadlines-container');
+        const loader = document.getElementById('deadlines-loader');
+        let countdownIntervals = [];
+
+        // Function to show/hide tabs
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).classList.add('tab-active');
+        }
+
+        /**
+         * Parses CSV data from a string into an array of objects.
+         * @param {string} csvText - The CSV data as a string.
+         * @returns {Array<Object>} An array of objects representing the CSV data.
+         */
+        function parseCSV(csvText) {
+            const rows = csvText.trim().split('\n');
+            if (rows.length <= 1) return []; // No data rows
+            const headers = rows[0].split(',').map(h => h.trim());
+            return rows.slice(1).map(row => {
+                const values = row.split(',').map(v => v.trim());
+                let entry = {};
+                headers.forEach((header, i) => {
+                    entry[header] = values[i];
+                });
+                return entry;
+            });
+        }
+
+        /**
+         * Fetches and processes data from a single Google Sheet.
+         * @param {string} url - The published CSV URL of the Google Sheet.
+         * @param {string} type - The type of data (e.g., 'Exam', 'Assignment', 'Event').
+         * @returns {Promise<Array<Object>>} A promise that resolves to an array of processed data items.
+         */
+        async function fetchSheetData(url, type) {
+            if (!url || url.includes('YOUR_')) {
+                console.warn(`Skipping fetch for ${type}: URL is not configured.`);
+                return [];
+            }
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Network response was not ok for ${type}`);
+                const csvData = await response.text();
+                const parsedData = parseCSV(csvData);
+                return parsedData.map(item => ({...item, type}));
+            } catch (error) {
+                console.error(`Error fetching ${type}:`, error);
+                return [];
+            }
+        }
+
+        /**
+         * Creates a display card for a deadline/event.
+         * @param {Object} item - The data item for the card.
+         * @param {number} index - The index of the item for unique ID generation.
+         * @returns {HTMLElement} The created HTML div element for the card.
+         */
+        function createDeadlineCard(item, index) {
+            const card = document.createElement('div');
+            card.className = 'bg-white p-5 rounded-lg shadow-md border-l-4 fade-in';
+            let borderColor = 'border-gray-400', icon = '🔔';
+            let itemName = '';
+            let itemDescription = '';
+            let dateTimeString = '';
+
+            // Determine content based on item type
+            switch(item.type) {
+                case 'Exam': 
+                    borderColor = 'border-red-500'; icon = '✍️'; 
+                    itemName = item['Exam Name'] || 'Exam';
+                    itemDescription = item['Description'] || '';
+                    dateTimeString = `${item.Date || ''}T${item.Time || ''}:00`;
+                    break;
+                case 'Assignment': 
+                    borderColor = 'border-yellow-500'; icon = '📝'; 
+                    itemName = item['Assignment Name'] || 'Assignment';
+                    itemDescription = item['Description'] || '';
+                    dateTimeString = `${item['Due Date'] || ''}T${item['Due Time'] || ''}:00`;
+                    break;
+                case 'Event': 
+                    borderColor = 'border-blue-500'; icon = '🎉'; 
+                    itemName = item['Function Name'] || 'Event';
+                    itemDescription = `${item['Location'] || ''} - ${item['Description'] || ''}`;
+                    dateTimeString = `${item.Date || ''}T${item.Time || ''}:00`;
+                    break;
+                default: 
+                    // Default case if type is not recognized or missing
+                    itemName = item.Name || 'Unknown Item';
+                    itemDescription = item.Description || 'No description';
+                    dateTimeString = `${item.Date || ''}T${item.Time || ''}:00`;
+                    break;
+            }
+
+            const countdownId = `countdown-${index}`;
+            card.classList.add(borderColor);
+            card.innerHTML = `
+                <div class="flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center mb-2">
+                            <span class="text-xl mr-3">${icon}</span>
+                            <h4 class="font-bold text-lg text-gray-800">${itemName}</h4>
+                        </div>
+                        <p class="text-gray-600 ml-9 mb-3">${itemDescription}</p>
+                    </div>
+                    <span class="text-xs font-semibold text-white px-2 py-1 rounded-full ${
+                        {'Exam':'bg-red-500', 'Assignment':'bg-yellow-500', 'Event':'bg-blue-500'}[item.type] || 'bg-gray-500'
+                    }">${item.type}</span>
+                </div>
+                <div class="mt-2 pt-3 border-t border-gray-200">
+                    <div id="${countdownId}" class="countdown-timer text-center p-2 rounded-md">
+                        <span class="text-gray-700 font-semibold">Loading timer...</span>
+                    </div>
+                </div>`;
+            return card;
+        }
+
+        /**
+         * Starts a countdown timer for a specific deadline.
+         * @param {string} elementId - The ID of the HTML element to display the countdown.
+         * @param {Date} dueDate - The target Date object for the countdown.
+         */
+        function startCountdown(elementId, dueDate) {
+            const timerElement = document.getElementById(elementId);
+            if (!timerElement) return; // Exit if element not found
+
+            // Clear any existing interval for this element to prevent duplicates
+            // This is handled by clearing all intervals in displayAllDeadlines before starting new ones.
+
+            const interval = setInterval(() => {
+                const distance = dueDate.getTime() - new Date().getTime(); // Remaining time in milliseconds
+
+                if (distance < 0) {
+                    clearInterval(interval); // Stop the timer
+                    timerElement.innerHTML = `<span class="font-bold text-red-600">This deadline has passed.</span>`;
+                    return;
+                }
+
+                // Calculate time units
+                const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Update the display
+                timerElement.innerHTML = `<span class="font-bold text-indigo-600 text-lg">${d}d ${h}h ${m}m ${s}s</span><p class="text-xs text-gray-500 mt-1">remaining</p>`;
+            }, 1000); // Update every second
+            countdownIntervals.push(interval); // Store interval ID to clear later
+        }
+
+
+        /**
+         * Fetches, filters, and displays all deadlines from all configured sheets.
+         */
+        async function displayAllDeadlines() {
+            // Clear all previous countdown intervals to prevent memory leaks and duplicate timers
+            countdownIntervals.forEach(clearInterval);
+            countdownIntervals = [];
+
+            // Fetch data from all sheets concurrently
+            const allResults = await Promise.all([
+                fetchSheetData(examsSheetUrl, 'Exam'),
+                fetchSheetData(assignmentsSheetUrl, 'Assignment'),
+                fetchSheetData(eventsSheetUrl, 'Event')
+            ]);
+            
+            // Combine all fetched data into a single array
+            const combinedData = [].concat(...allResults);
+
+            const now = new Date();
+            const twoDaysLater = new Date(now.getTime() + 48 * 60 * 60 * 1000); // Calculate 48 hours from now
+
+            // Process and filter upcoming items
+            const upcomingItems = combinedData.map(item => {
+                let dateTimeString = '';
+                if (item.type === 'Exam') {
+                    dateTimeString = `${item.Date || ''}T${item.Time || ''}:00`;
+                } else if (item.type === 'Assignment') {
+                    dateTimeString = `${item['Due Date'] || ''}T${item['Due Time'] || ''}:00`;
+                } else if (item.type === 'Event') {
+                    dateTimeString = `${item.Date || ''}T${item.Time || ''}:00`;
+                }
+                item.dueDate = new Date(dateTimeString); // Create Date object
+                return item;
+            }).filter(item => 
+                item.dueDate instanceof Date && // Ensure it's a valid Date object
+                !isNaN(item.dueDate) &&         // Ensure it's not 'Invalid Date'
+                item.dueDate > now &&           // Only future dates
+                item.dueDate <= twoDaysLater    // Within the next 48 hours
+            );
+
+            // Sort upcoming items by due date
+            upcomingItems.sort((a, b) => a.dueDate - b.dueDate);
+
+            deadlinesContainer.innerHTML = ''; // Clear previous content
+
+            if (upcomingItems.length > 0) {
+                // Display each upcoming item as a card with a countdown
+                upcomingItems.forEach((item, index) => {
+                    const card = createDeadlineCard(item, index);
+                    deadlinesContainer.appendChild(card);
+                    startCountdown(`countdown-${index}`, item.dueDate);
+                });
+                loader.classList.add('hidden'); // Hide loader if data is found
+            } else {
+                // Check if any URLs are still using placeholders
+                const allUrlsConfigured = ![examsSheetUrl, assignmentsSheetUrl, eventsSheetUrl].some(url => url.includes('YOUR_'));
+                loader.textContent = !allUrlsConfigured ? 'Please configure your Google Sheet URLs in the script.' : 'No upcoming deadlines in the next 48 hours.';
+                loader.classList.remove('hidden'); // Ensure loader is visible with message
+            }
+        }
+
+        /**
+         * Populates the weekly timetable table.
+         */
+        function populateTimeTable() {
+            const tbody = document.getElementById('timetable-body');
+            tbody.innerHTML = ''; // Clear existing rows
+            timeTableData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'bg-white border-b';
+                if (row.mon.toUpperCase() === 'LUNCH') tr.classList.add('bg-gray-50', 'font-medium'); // Special styling for lunch row
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-medium text-gray-900">${row.time}</td>
+                    <td class="px-6 py-4">${row.mon}</td>
+                    <td class="px-6 py-4">${row.tue}</td>
+                    <td class="px-6 py-4">${row.wed}</td>
+                    <td class="px-6 py-4">${row.thu}</td>
+                    <td class="px-6 py-4">${row.fri}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        /**
+         * Displays the Telegram popup modal if it hasn't been shown in this session and the URL is configured.
+         */
+        function showTelegramPopup() {
+            // Check if the popup has already been shown in this session or if the URL is a placeholder
+            if (sessionStorage.getItem('telegramPopupShown') || telegramChannelUrl.includes('your_channel_name')) {
+                return;
+            }
+            const popup = document.getElementById('telegram-popup');
+            const joinButton = document.getElementById('telegram-join-button');
+            joinButton.href = telegramChannelUrl; // Set the join button's URL
+            popup.classList.remove('hidden'); // Show the popup
+            sessionStorage.setItem('telegramPopupShown', 'true'); // Mark as shown for this session
+        }
+
+        /**
+         * Closes the Telegram popup modal.
+         */
+        function closeTelegramPopup() {
+            document.getElementById('telegram-popup').classList.add('hidden');
+        }
+
+        // --- LOGIN / AUTHENTICATION FUNCTIONS ---
+
+        /**
+         * Displays the login modal.
+         */
+        function showLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('login-error-message').classList.add('hidden'); // Hide any previous error messages
+            document.getElementById('username').value = ''; // Clear input fields
+            document.getElementById('password').value = '';
+        }
+
+        /**
+         * Closes the login modal.
+         */
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        /**
+         * Handles the login attempt. Fetches user data from Google Sheet and validates credentials.
+         */
+        async function performLogin() {
+            const usernameInput = document.getElementById('username').value;
+            const passwordInput = document.getElementById('password').value;
+            const errorMessage = document.getElementById('login-error-message');
+
+            if (usersSheetUrl.includes('YOUR_USERS_SHEET_ID')) {
+                errorMessage.textContent = 'User login sheet URL is not configured.';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(usersSheetUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data. Network error or invalid sheet URL.');
+                }
+                const csvData = await response.text();
+                const users = parseCSV(csvData);
+
+                const foundUser = users.find(user => 
+                    user.Username === usernameInput && user.Password === passwordInput
+                );
+
+                if (foundUser) {
+                    sessionStorage.setItem('isLoggedIn', 'true'); // Set a flag in session storage
+                    closeLoginModal();
+                    window.location.href = 'gpa-calculator.html'; // Redirect to GPA calculator page
+                } else {
+                    errorMessage.textContent = 'Invalid username or password.';
+                    errorMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                errorMessage.textContent = 'An error occurred during login. Please try again later.';
+                errorMessage.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Redirects to the GPA Calculator page after showing the login modal.
+         */
+        function redirectToGPACalculator() {
+            // Before redirecting, check if already logged in (optional, but good for UX)
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                window.location.href = 'gpa-calculator.html';
+            } else {
+                showLoginModal(); // Show login modal if not logged in
+            }
+        }
+
+
+        // --- Initial Page Load Actions ---
+        document.addEventListener('DOMContentLoaded', () => {
+            populateTimeTable();
+            displayAllDeadlines();
+            showTab('deadlines'); // Set 'Approaching Deadlines' as the default active tab
+
+            // Show Telegram popup after 3 seconds on initial load
+            setTimeout(showTelegramPopup, 3000); 
+            // Refresh deadlines every 5 minutes to keep them updated
+            setInterval(displayAllDeadlines, 5 * 60 * 1000); 
+        });
+    </script>
+
+</body>
+</html>
