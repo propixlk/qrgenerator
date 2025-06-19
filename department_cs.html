@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS Department - Uni Help</title>
+    
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true' || localStorage.getItem('department') !== 'CS') {
+            window.location.href = 'login.html';
+        }
+    </script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <h1>Welcome to the Computer Science Department</h1>
+            <button id="logout-button" class="animated-button secondary">Logout</button>
+        </header>
+
+        <main>
+            <h2>Department Resources</h2>
+            <p>Here you will find notes, timetables, and the GPA calculator for the CS department.</p>
+            </main>
+    </div>
+
+    <div id="telegram-popup" class="popup-container hidden">
+        <div class="popup-content">
+            <button class="close-btn">&times;</button>
+            <h3>Join Our Community!</h3>
+            <p>Get instant updates, notes, and connect with fellow students.</p>
+            <a href="https://t.me/your_telegram_group_link" target="_blank" class="animated-button telegram-btn">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71l-4.39-3.24l-2.1 2.02c-.2.2-.37.37-.74.37z"></path></svg>
+                <span>Join on Telegram</span>
+            </a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

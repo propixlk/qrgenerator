@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uni Help - Welcome</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CryptoJS for Password Hashing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .telegram-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3), 0 4px 6px -2px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+
+    <div id="app-container" class="w-full max-w-md p-4">
+
+        <!-- Auth Section: Login/Signup -->
+        <div id="auth-section" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg w-full">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Uni Help</h1>
+                <p class="text-gray-500 dark:text-gray-400" id="form-title">Welcome Back! Please login.</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-6">
+                <!-- Form content similar to previous version -->
+                <div>
+                    <label for="login-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                    <input type="email" id="login-email" required class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="you@example.com">
+                </div>
+                <div>
+                    <label for="login-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                    <input type="password" id="login-password" required class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="••••••••">
+                </div>
+                <div class="flex items-center justify-between">
+                    <a href="#" id="forgot-password-link" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Forgot Password?</a>
+                </div>
+                <div>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300">Login</button>
+                </div>
+            </form>
+
+            <!-- Signup Form (hidden by default) -->
+            <form id="signup-form" class="hidden space-y-6">
+                <!-- Form content similar to previous version -->
+                 <div>
+                    <label for="signup-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                    <input type="email" id="signup-email" required class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="you@example.com">
+                </div>
+                <div>
+                    <label for="signup-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Create Password</label>
+                    <input type="password" id="signup-password" required minlength="6" class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="Minimum 6 characters">
+                </div>
+                 <div>
+                    <label for="department" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
+                    <select id="department" required class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gamma-ray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white">
+                        <option value="" disabled selected>-- Choose your department --</option>
+                        <option value="ict">Information & Communication Technology</option>
+                        <option value="bms">Business & Management Studies</option>
+                        <option value="et">Engineering Technology</option>
+                        <option value="bst">Biosystems Technology</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300">Create Account</button>
+                </div>
+            </form>
+
+            <!-- Password Reset Form (hidden by default) -->
+            <form id="reset-password-form" class="hidden space-y-6">
+                 <p class="text-center text-gray-600 dark:text-gray-300">Create a new password for your account.</p>
+                <div>
+                    <label for="reset-password-new" class="block text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
+                    <input type="password" id="reset-password-new" required minlength="6" class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg" placeholder="Minimum 6 characters">
+                </div>
+                <div>
+                    <button type="submit" class="w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600">Reset Password</button>
+                </div>
+            </form>
+            
+            <div id="auth-toggle" class="mt-6 text-center">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    <span id="toggle-text">Don't have an account?</span>
+                    <a href="#" id="toggle-link" class="font-medium text-blue-600 dark:text-blue-400 hover:underline">Sign Up</a>
+                </p>
+            </div>
+            <div id="message-box" class="mt-4 text-center text-sm font-medium p-3 rounded-lg hidden"></div>
+        </div>
+
+        <!-- Department Page (Hidden by default) -->
+        <div id="department-section" class="hidden text-center">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg w-full">
+                <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Welcome!</h2>
+                <p id="department-info" class="mt-2 text-lg text-gray-600 dark:text-gray-300">You are logged in.</p>
+                <button id="logout-button" class="mt-6 w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700">Logout</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Telegram Modal -->
+    <div id="telegram-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <!-- Modal content similar to previous version -->
+         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center transform transition-all scale-95 opacity-0" id="modal-content">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Join Our Community!</h3>
+            <p class="mt-4 text-gray-600 dark:text-gray-300">Get the latest notes, timetables, and updates directly on our Telegram channel.</p>
+            <a href="https://t.me/your_telegram_group" target="_blank" class="telegram-button mt-8 inline-block w-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-transform duration-300 ease-in-out">
+                Join Telegram Group
+            </a>
+            <button id="close-modal" class="mt-4 w-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium py-2 rounded-lg">Maybe later</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const SCRIPT_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL"; // <-- PASTE YOUR DEPLOYED APPS SCRIPT URL HERE
+
+        // --- DOM Elements ---
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const resetPasswordForm = document.getElementById('reset-password-form');
+        const toggleLink = document.getElementById('toggle-link');
+        const formTitle = document.getElementById('form-title');
+        const toggleText = document.getElementById('toggle-text');
+        const messageBox = document.getElementById('message-box');
+        const authSection = document.getElementById('auth-section');
+        const departmentSection = document.getElementById('department-section');
+        const departmentInfo = document.getElementById('department-info');
+        const logoutButton = document.getElementById('logout-button');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const authToggle = document.getElementById('auth-toggle');
+
+        // --- Page Load Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const resetToken = urlParams.get('reset_token');
+            
+            if (resetToken) {
+                showResetPasswordForm(resetToken);
+            } else {
+                checkLoginStatus();
+            }
+        });
+
+        function checkLoginStatus() {
+            const user = sessionStorage.getItem('uni-help-user');
+            if (user) {
+                const userData = JSON.parse(user);
+                showDepartmentPage(userData.department);
+            } else {
+                showAuthPage('login');
+            }
+        }
+
+        // --- UI Control ---
+        function showMessage(message, isError = false, duration = 5000) {
+            messageBox.textContent = message;
+            messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+            messageBox.classList.add(isError ? 'bg-red-100' : 'bg-green-100', isError ? 'text-red-700' : 'text-green-700');
+            setTimeout(() => messageBox.classList.add('hidden'), duration);
+        }
+
+        toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isShowingLogin = !loginForm.classList.contains('hidden');
+            showAuthPage(isShowingLogin ? 'signup' : 'login');
+        });
+
+        function showAuthPage(formToShow) {
+            authSection.classList.remove('hidden');
+            departmentSection.classList.add('hidden');
+            loginForm.classList.add('hidden');
+            signupForm.classList.add('hidden');
+            resetPasswordForm.classList.add('hidden');
+            authToggle.classList.remove('hidden');
+
+            if (formToShow === 'signup') {
+                signupForm.classList.remove('hidden');
+                formTitle.textContent = 'Create a New Account';
+                toggleText.textContent = 'Already have an account?';
+                toggleLink.textContent = 'Login';
+            } else if (formToShow === 'login') {
+                loginForm.classList.remove('hidden');
+                formTitle.textContent = 'Welcome Back! Please login.';
+                toggleText.textContent = "Don't have an account?";
+                toggleLink.textContent = 'Sign Up';
+            } else if (formToShow === 'reset') {
+                 resetPasswordForm.classList.remove('hidden');
+                 formTitle.textContent = 'Reset Your Password';
+                 authToggle.classList.add('hidden');
+            }
+        }
+        
+        function showDepartmentPage(department) {
+            const departmentName = getDepartmentFullName(department);
+            departmentInfo.textContent = `Welcome to the ${departmentName} section.`;
+            authSection.classList.add('hidden');
+            departmentSection.classList.remove('hidden');
+            showTelegramModal();
+        }
+        
+        function showResetPasswordForm(token) {
+            showAuthPage('reset');
+            resetPasswordForm.dataset.token = token;
+        }
+
+        // --- Event Handlers ---
+        signupForm.addEventListener('submit', handleSignup);
+        loginForm.addEventListener('submit', handleLogin);
+        logoutButton.addEventListener('click', handleLogout);
+        forgotPasswordLink.addEventListener('click', handleForgotPassword);
+        resetPasswordForm.addEventListener('submit', handleResetPassword);
+
+        // --- Action Handlers (Communicate with Apps Script) ---
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const department = document.getElementById('department').value;
+
+            if (!department) {
+                showMessage('Please choose your department.', true);
+                return;
+            }
+            
+            const passwordHash = CryptoJS.SHA256(password).toString();
+            const payload = { action: 'signup', email, passwordHash, department };
+            
+            showMessage('Creating account...', false);
+            const response = await postData(payload);
+
+            if (response.status === 'success') {
+                showMessage('Account created! Please login.', false);
+                showAuthPage('login');
+            } else {
+                showMessage(response.message || 'An unknown error occurred.', true);
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const passwordHash = CryptoJS.SHA256(password).toString();
+            const payload = { action: 'login', email, passwordHash };
+
+            showMessage('Logging in...', false);
+            const response = await postData(payload);
+
+            if (response.status === 'success') {
+                sessionStorage.setItem('uni-help-user', JSON.stringify(response));
+                showDepartmentPage(response.department);
+            } else {
+                showMessage(response.message || 'Invalid email or password.', true);
+            }
+        }
+        
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            if (!email) {
+                showMessage('Please enter your email to reset password.', true);
+                return;
+            }
+            // The reset link will point back to the current page
+            const resetPageUrl = window.location.href.split('?')[0];
+
+            const payload = { action: 'forgotPassword', email, resetPageUrl };
+            showMessage('Processing...', false);
+            const response = await postData(payload);
+            showMessage(response.message, response.status !== 'success');
+        }
+
+        async function handleResetPassword(e) {
+            e.preventDefault();
+            const newPassword = document.getElementById('reset-password-new').value;
+            const token = resetPasswordForm.dataset.token;
+            
+            if (newPassword.length < 6) {
+                showMessage('Password must be at least 6 characters long.', true);
+                return;
+            }
+
+            const newPasswordHash = CryptoJS.SHA256(newPassword).toString();
+            const payload = { action: 'resetPassword', token, newPasswordHash };
+            
+            showMessage('Resetting password...', false);
+            const response = await postData(payload);
+
+            if (response.status === 'success') {
+                showMessage(response.message, false);
+                // Clear token from URL and show login form
+                window.history.replaceState({}, document.title, window.location.pathname);
+                showAuthPage('login');
+            } else {
+                showMessage(response.message || 'Failed to reset password.', true);
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('uni-help-user');
+            showAuthPage('login');
+        }
+
+        // --- API Call Helper ---
+        async function postData(payload) {
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Required for Apps Script
+                    body: JSON.stringify(payload)
+                });
+                return await res.json();
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                return { status: 'error', message: 'Could not connect to the server.' };
+            }
+        }
+        
+        // --- Modal Control ---
+        const telegramModal = document.getElementById('telegram-modal');
+        const modalContent = document.getElementById('modal-content');
+        const closeModalButton = document.getElementById('close-modal');
+
+        function showTelegramModal() {
+            telegramModal.classList.remove('hidden');
+            setTimeout(() => { modalContent.classList.remove('scale-95', 'opacity-0'); }, 50);
+        }
+        function hideTelegramModal() {
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { telegramModal.classList.add('hidden'); }, 300);
+        }
+        closeModalButton.addEventListener('click', hideTelegramModal);
+        telegramModal.addEventListener('click', (e) => { if (e.target === telegramModal) hideTelegramModal(); });
+
+
+        // --- Helper Functions ---
+        function getDepartmentFullName(deptCode) {
+            const departments = {
+                'ict': 'Information & Communication Technology',
+                'bms': 'Business & Management Studies',
+                'et': 'Engineering Technology',
+                'bst': 'Biosystems Technology'
+            };
+            return departments[deptCode] || 'General';
+        }
+
+    </script>
+</body>
+</html>
