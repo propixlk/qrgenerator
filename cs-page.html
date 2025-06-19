@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS Department - Uni Help</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="popup-overlay" id="telegramPopup">
+        <div class="popup-content">
+            <span class="popup-close" onclick="closePopup()">&times;</span>
+            <h3>Join Our Community!</h3>
+            <p>Get instant updates, notes, and connect with peers.</p>
+            <a href="https://t.me/your_telegram_group_link" target="_blank" class="animated-button">Join Telegram Group</a>
+        </div>
+    </div>
+
+
+    <div class="content-container">
+        <h1>Welcome to the Computer Science Department Page</h1>
+        <p>Hi <strong id="username-display"></strong>!</p>
+        <p>Here you will find your notes, timetable, and the GPA calculator soon.</p>
+        <button id="logoutButton">Logout</button>
+    </div>
+
+    <script>
+        // --- Security and User Greeting ---
+        const userString = localStorage.getItem('uniHelpUser');
+        if (!userString) {
+            // If no user is logged in, redirect to login page
+            window.location.href = 'index.html';
+        } else {
+            const user = JSON.parse(userString);
+            // Greet the user
+            document.getElementById('username-display').textContent = user.username;
+        }
+
+        // --- Logout functionality ---
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.removeItem('uniHelpUser');
+            window.location.href = 'index.html';
+        });
+
+        // --- Telegram Popup Logic ---
+        function showPopup() {
+            // Only show popup if it hasn't been shown before in this session
+            if(!sessionStorage.getItem('telegramPopupShown')) {
+                document.getElementById('telegramPopup').style.display = 'flex';
+                sessionStorage.setItem('telegramPopupShown', 'true');
+            }
+        }
+
+        function closePopup() {
+            document.getElementById('telegramPopup').style.display = 'none';
+        }
+
+        // Show the popup a second after the page loads
+        setTimeout(showPopup, 1000);
+
+    </script>
+</body>
+</html>
