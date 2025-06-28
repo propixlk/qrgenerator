@@ -1,366 +1,335 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>දියුණු QR කේත උත්පාදකය</title>
-    <!-- Tailwind CSS CDN -->
+    <title>QR Code Generator</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- QRCode.js library CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js"></script>
-    <!-- Inter font from Google Fonts -->
+    
+    <!-- QR Code Styling Library -->
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
+        /* Custom Styles for a Sleek UI */
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%); /* Blue-purple gradient background */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 1.5rem; /* Equivalent to p-6 */
-        }
-        .container {
-            background-color: #ffffff;
-            border-radius: 1.5rem; /* Equivalent to rounded-3xl */
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Equivalent to shadow-xl */
-            width: 100%;
-            max-width: 32rem; /* Equivalent to max-w-xl */
-            padding: 2.5rem; /* Equivalent to p-10 */
-        }
-        /* Custom styles for the QR code canvas */
-        #qrcode canvas {
-            display: block;
-            margin: 0 auto;
-            border-radius: 0.75rem; /* Apply rounded corners to the canvas */
-            transition: transform 0.3s ease-in-out;
-        }
-        #qrcode canvas:hover {
-            transform: scale(1.02);
         }
 
-        /* Styling for range input thumb */
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #2575fc;
-            cursor: pointer;
-            box-shadow: 0 0 0 4px rgba(37, 117, 252, 0.3);
-            transition: background 0.3s ease-in-out;
+        /* Smooth transitions for theme changes */
+        body, .bg-dark-primary, .bg-light-primary {
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        input[type="range"]::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #2575fc;
-            cursor: pointer;
-            box-shadow: 0 0 0 4px rgba(37, 117, 252, 0.3);
-            transition: background 0.3s ease-in-out;
+        
+        /* Custom background colors */
+        .bg-dark-primary { background-color: #0f172a; } /* slate-900 */
+        .bg-light-primary { background-color: #f1f5f9; } /* slate-100 */
+
+        .bg-dark-secondary { background-color: #1e293b; } /* slate-800 */
+        .bg-light-secondary { background-color: #ffffff; }
+
+        .border-dark-tertiary { border-color: #334155; } /* slate-700 */
+        .border-light-tertiary { border-color: #cbd5e1; } /* slate-300 */
+        
+        .text-dark-accent { color: #60a5fa; } /* blue-400 */
+        .text-light-accent { color: #3b82f6; } /* blue-600 */
+
+        /* Custom scrollbar for a polished look */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        input[type="range"]::-webkit-slider-thumb:hover {
-            background: #1a5acb;
+        ::-webkit-scrollbar-track {
+            background: #1e293b; /* slate-800 */
         }
-        input[type="range"]::-moz-range-thumb:hover {
-            background: #1a5acb;
+        .light ::-webkit-scrollbar-track {
+            background: #e2e8f0; /* slate-200 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6; /* blue-600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2563eb; /* blue-700 */
         }
 
-        /* Loading spinner */
-        .loader {
-            border: 4px solid #f3f3f3; /* Light grey */
-            border-top: 4px solid #3498db; /* Blue */
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
+        /* Subtle focus ring style */
+        .focus-ring {
+            transition: box-shadow 0.2s ease;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .focus-ring:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+            outline: none;
         }
+        
+        /* Custom file input style */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .file-input-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1 class="text-4xl font-extrabold text-center mb-8 text-gray-800">දියුණු QR කේත උත්පාදකය</h1>
+<body class="bg-dark-primary text-gray-300">
 
-        <!-- Input Section -->
-        <div class="mb-6">
-            <label for="qrInput" class="block text-gray-700 text-base font-medium mb-2">QR කේතය සඳහා දත්ත ඇතුලත් කරන්න:</label>
-            <textarea id="qrInput" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-200 transition duration-300 ease-in-out resize-y min-h-[100px] text-gray-800 placeholder-gray-400" placeholder="උදා: https://www.google.com, ඔබගේ පෙළ, හෝ යම් තොරතුරක්..."></textarea>
-        </div>
+    <div class="min-h-screen flex flex-col items-center justify-center p-4 selection:bg-blue-500/20">
 
-        <!-- Customization Options -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <!-- Foreground Color -->
-            <div>
-                <label for="fgColor" class="block text-gray-700 text-sm font-medium mb-2">පෙරබිම් වර්ණය:</label>
-                <input type="color" id="fgColor" value="#000000" class="w-full h-10 p-1 border border-gray-300 rounded-lg cursor-pointer">
+        <!-- Header Section -->
+        <header class="text-center mb-8 w-full max-w-7xl">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+                QR Code Generator
+            </h1>
+            <div class="mt-4 flex items-center justify-center gap-x-4">
+                <p class="text-sm text-gray-400">Powered by Propix LK</p>
+                <a href="https://propix.work.gd" target="_blank" class="text-xs px-3 py-1 bg-slate-700 text-slate-300 rounded-full hover:bg-slate-600 transition-colors duration-300">
+                    propix.work.gd
+                </a>
+                <button id="theme-toggle" class="p-2 rounded-full bg-slate-800 text-slate-300 dark:bg-slate-100 dark:text-slate-800 focus:outline-none focus-ring">
+                    <svg id="theme-icon-light" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    <svg id="theme-icon-dark" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
             </div>
-            <!-- Background Color -->
-            <div>
-                <label for="bgColor" class="block text-gray-700 text-sm font-medium mb-2">පසුබිම් වර්ණය:</label>
-                <input type="color" id="bgColor" value="#ffffff" class="w-full h-10 p-1 border border-gray-300 rounded-lg cursor-pointer">
-            </div>
-            <!-- Size -->
-            <div class="col-span-1 md:col-span-2">
-                <label for="qrSize" class="block text-gray-700 text-sm font-medium mb-2">QR කේත ප්‍රමාණය (<span id="qrSizeValue">256</span>px):</label>
-                <input type="range" id="qrSize" min="100" max="500" value="256" step="10" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-            </div>
-            <!-- Error Correction Level -->
-            <div>
-                <label for="errorCorrection" class="block text-gray-700 text-sm font-medium mb-2">දෝෂ නිවැරදි කිරීමේ මට්ටම:</label>
-                <select id="errorCorrection" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-200 transition duration-300 ease-in-out text-gray-800">
-                    <option value="L">L (7%)</option>
-                    <option value="M">M (15%)</option>
-                    <option value="Q">Q (25%)</option>
-                    <option value="H" selected>H (30%)</option>
-                </select>
-            </div>
-        </div>
+        </header>
 
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4 mb-8">
-            <button id="generateBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300">
-                QR කේතය සාදන්න
-            </button>
-            <button id="clearBtn" class="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-gray-300">
-                පැහැදිලි කරන්න
-            </button>
-        </div>
+        <!-- Main Content -->
+        <main class="w-full max-w-7xl flex flex-col lg:flex-row gap-8">
+            
+            <!-- Left Side: Controls -->
+            <div class="w-full lg:w-2/5 xl:w-1/3 bg-dark-secondary rounded-2xl shadow-2xl shadow-black/20 p-6 border border-dark-tertiary">
+                <h2 class="text-2xl font-bold mb-6 text-dark-accent">Customize Your Code</h2>
+                
+                <!-- URL/Text Input -->
+                <div class="mb-5">
+                    <label for="text-input" class="block text-sm font-medium mb-2 text-slate-400">URL or Text</label>
+                    <input type="text" id="text-input" value="https://propix.work.gd" class="w-full bg-slate-900/70 border-2 border-slate-700 text-slate-200 rounded-lg px-4 py-2.5 focus-ring focus:border-blue-500 transition-colors">
+                </div>
 
-        <!-- QR Code Display Section -->
-        <div id="qrCodeContainer" class="mt-8 text-center hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">ඔබගේ QR කේතය:</h2>
-            <div id="loadingSpinner" class="loader hidden"></div>
-            <div id="qrcode" class="bg-gray-100 p-4 rounded-xl inline-block transition duration-300 ease-in-out">
-                <!-- QR code will be rendered here by JavaScript -->
+                <!-- Color Pickers -->
+                <div class="grid grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <label for="color-dark" class="block text-sm font-medium mb-2 text-slate-400">Dot Color</label>
+                        <input type="color" id="color-dark" value="#0ea5e9" class="w-full h-11 p-1 bg-slate-900/70 border-2 border-slate-700 rounded-lg cursor-pointer">
+                    </div>
+                    <div>
+                        <label for="color-light" class="block text-sm font-medium mb-2 text-slate-400">Background</label>
+                        <input type="color" id="color-light" value="#ffffff" class="w-full h-11 p-1 bg-slate-900/70 border-2 border-slate-700 rounded-lg cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Style Selectors -->
+                <div class="mb-5">
+                    <label for="dots-style" class="block text-sm font-medium mb-2 text-slate-400">Dot Style</label>
+                    <select id="dots-style" class="w-full bg-slate-900/70 border-2 border-slate-700 text-slate-200 rounded-lg px-3 py-2.5 focus-ring focus:border-blue-500 transition-colors">
+                        <option value="square">Square</option>
+                        <option value="dots">Dots</option>
+                        <option value="rounded">Rounded</option>
+                        <option value="extra-rounded">Extra Rounded</option>
+                        <option value="classy">Classy</option>
+                        <option value="classy-rounded">Classy Rounded</option>
+                    </select>
+                </div>
+                 <div class="mb-5">
+                    <label for="corners-square-style" class="block text-sm font-medium mb-2 text-slate-400">Corner Style</label>
+                    <select id="corners-square-style" class="w-full bg-slate-900/70 border-2 border-slate-700 text-slate-200 rounded-lg px-3 py-2.5 focus-ring focus:border-blue-500 transition-colors">
+                       <option value="square">Square</option>
+                       <option value="dot">Dot</option>
+                       <option value="extra-rounded">Extra Rounded</option>
+                    </select>
+                </div>
+                
+                <!-- Image Upload -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2 text-slate-400">Embed Image (Optional)</label>
+                    <div class="file-input-wrapper w-full px-4 py-2.5 bg-slate-900/70 border-2 border-dashed border-slate-700 rounded-lg text-center text-slate-400 hover:border-blue-500 hover:text-white transition-colors cursor-pointer">
+                        <span id="file-name">Choose an image...</span>
+                        <input type="file" id="image-upload" accept="image/*">
+                    </div>
+                     <button id="clear-image" class="text-xs text-blue-400 hover:text-blue-300 mt-2 transition-colors">Clear Image</button>
+                </div>
+                
+                <!-- Download Button -->
+                 <button id="download-btn" class="w-full font-bold text-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-3.5 rounded-lg hover:from-blue-600 hover:to-cyan-600 active:scale-[0.98] transition-all duration-300 shadow-lg shadow-blue-500/20 focus-ring">
+                    Download QR Code
+                </button>
             </div>
-            <!-- Download Button -->
-            <button id="downloadBtn" class="mt-8 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300">
-                QR කේතය බාගන්න
-            </button>
-        </div>
+
+            <!-- Right Side: QR Code Display -->
+            <div class="w-full lg:w-3/5 xl:w-2/3 flex items-center justify-center p-6 bg-dark-secondary rounded-2xl shadow-2xl shadow-black/20 border border-dark-tertiary">
+                <div id="canvas-container" class="relative w-full h-full max-w-lg max-h-lg aspect-square flex items-center justify-center">
+                    <div id="canvas" class="p-4 bg-white rounded-lg shadow-inner"></div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Ad Banner Section -->
+        <footer class="w-full max-w-7xl mt-8">
+            <div class="bg-dark-secondary rounded-lg p-4 text-center text-slate-500 border border-dark-tertiary">
+                <p class="text-sm">Advertisement</p>
+                <a href="https://example.com" target="_blank" class="block mt-2">
+                    <img src="https://placehold.co/728x90/1e293b/3b82f6?text=Your+Sleek+Ad+Here" 
+                         alt="Ad Banner" 
+                         class="mx-auto rounded-md opacity-70 hover:opacity-100 transition-opacity"
+                         onerror="this.onerror=null;this.src='https://placehold.co/728x90/cbd5e1/334155?text=Ad+Could+Not+Load';">
+                </a>
+            </div>
+        </footer>
     </div>
 
     <script>
-        // Get references to DOM elements
-        const qrInput = document.getElementById('qrInput');
-        const fgColorInput = document.getElementById('fgColor');
-        const bgColorInput = document.getElementById('bgColor');
-        const qrSizeInput = document.getElementById('qrSize');
-        const qrSizeValueSpan = document.getElementById('qrSizeValue');
-        const errorCorrectionSelect = document.getElementById('errorCorrection');
-        const generateBtn = document.getElementById('generateBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const qrCodeContainer = document.getElementById('qrCodeContainer');
-        const qrCodeDiv = document.getElementById('qrcode');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const loadingSpinner = document.getElementById('loadingSpinner');
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeIconLight = document.getElementById('theme-icon-light');
+            const themeIconDark = document.getElementById('theme-icon-dark');
+            const textInput = document.getElementById('text-input');
+            const colorDarkInput = document.getElementById('color-dark');
+            const colorLightInput = document.getElementById('color-light');
+            const dotsStyleSelect = document.getElementById('dots-style');
+            const cornersSquareStyleSelect = document.getElementById('corners-square-style');
+            const imageUpload = document.getElementById('image-upload');
+            const fileNameSpan = document.getElementById('file-name');
+            const clearImageBtn = document.getElementById('clear-image');
+            const downloadBtn = document.getElementById('download-btn');
+            const canvasWrapper = document.getElementById('canvas');
+            const canvasContainer = document.getElementById('canvas-container');
 
-        let qrCode = null; // Variable to hold the QRCode.js instance
-        let generationTimeout; // To debounce QR code generation
+            let uploadedImage = null;
+            
+            // --- Theme Toggling ---
+            const applyTheme = (theme) => {
+                const root = document.documentElement;
+                const isDark = theme === 'dark';
+                root.classList.toggle('dark', isDark);
+                root.classList.toggle('light', !isDark);
+                
+                // Toggle icons
+                themeIconLight.classList.toggle('hidden', isDark);
+                themeIconDark.classList.toggle('hidden', !isDark);
+                
+                // Toggle classes on theme-dependent elements
+                document.body.classList.toggle('bg-dark-primary', isDark);
+                document.body.classList.toggle('bg-light-primary', !isDark);
+                document.body.classList.toggle('text-gray-300', isDark);
+                document.body.classList.toggle('text-slate-700', !isDark);
 
-        /**
-         * Initializes the QR code generator on window load.
-         * Sets up event listeners for inputs and buttons.
-         */
-        window.onload = function() {
-            // Update QR code size value display when slider moves
-            qrSizeInput.addEventListener('input', () => {
-                qrSizeValueSpan.textContent = qrSizeInput.value;
-                debounceGenerateQRCode(); // Regenerate QR on size change
+                document.querySelectorAll('.bg-dark-secondary, .bg-light-secondary').forEach(el => {
+                    el.classList.toggle('bg-dark-secondary', isDark);
+                    el.classList.toggle('bg-light-secondary', !isDark);
+                });
+                 document.querySelectorAll('.border-dark-tertiary, .border-light-tertiary').forEach(el => {
+                    el.classList.toggle('border-dark-tertiary', isDark);
+                    el.classList.toggle('border-light-tertiary', !isDark);
+                });
+                document.querySelectorAll('.text-dark-accent, .text-light-accent').forEach(el => {
+                    el.classList.toggle('text-dark-accent', isDark);
+                    el.classList.toggle('text-light-accent', !isDark);
+                });
+            };
+            
+            // Set initial theme
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+
+            themeToggleBtn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
             });
 
-            // Event listeners for input changes to trigger live generation (debounced)
-            qrInput.addEventListener('input', debounceGenerateQRCode);
-            fgColorInput.addEventListener('input', debounceGenerateQRCode);
-            bgColorInput.addEventListener('input', debounceGenerateQRCode);
-            errorCorrectionSelect.addEventListener('change', debounceGenerateQRCode);
 
-            // Event listener for the Generate QR Code button (for explicit generation)
-            generateBtn.addEventListener('click', generateQRCode);
+            // --- QR Code Styling Instance ---
+            const qrCode = new QRCodeStyling({
+                width: 300,
+                height: 300,
+                type: 'svg',
+                data: textInput.value,
+                image: '',
+                dotsOptions: {
+                    color: colorDarkInput.value,
+                    type: dotsStyleSelect.value
+                },
+                backgroundOptions: {
+                    color: colorLightInput.value,
+                },
+                cornersSquareOptions: {
+                    type: cornersSquareStyleSelect.value,
+                },
+                imageOptions: {
+                    crossOrigin: "anonymous",
+                    margin: 10,
+                    imageSize: 0.4,
+                }
+            });
+            
+            const resizeQRCode = () => {
+                const size = Math.min(canvasContainer.clientWidth, canvasContainer.clientHeight) * 0.85;
+                qrCode.update({ width: size, height: size });
+            };
 
-            // Event listener for the Clear button
-            clearBtn.addEventListener('click', clearQRCode);
+            // --- QR Code Generation ---
+            const generateQRCode = () => {
+                canvasWrapper.style.backgroundColor = colorLightInput.value;
+                qrCode.update({
+                    data: textInput.value || 'https://propix.work.gd',
+                    dotsOptions: { color: colorDarkInput.value, type: dotsStyleSelect.value },
+                    backgroundOptions: { color: colorLightInput.value },
+                    cornersSquareOptions: { type: cornersSquareStyleSelect.value },
+                    image: uploadedImage || ''
+                });
+            };
 
-            // Event listener for the Download QR Code button
-            downloadBtn.addEventListener('click', downloadQRCode);
+            // --- Event Listeners ---
+            [textInput, colorDarkInput, colorLightInput, dotsStyleSelect, cornersSquareStyleSelect].forEach(input => {
+                input.addEventListener('input', generateQRCode);
+            });
 
-            // Initial generation if there's any default text
-            if (qrInput.value.trim() !== "") {
+            imageUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        uploadedImage = e.target.result;
+                        fileNameSpan.textContent = file.name;
+                        generateQRCode();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            clearImageBtn.addEventListener('click', () => {
+                uploadedImage = null;
+                imageUpload.value = ''; // Reset file input
+                fileNameSpan.textContent = 'Choose an image...';
                 generateQRCode();
-            }
-        };
-
-        /**
-         * Debounces the QR code generation function to prevent excessive calls
-         * when multiple inputs change rapidly (e.g., typing in textarea or dragging slider).
-         */
-        function debounceGenerateQRCode() {
-            clearTimeout(generationTimeout);
-            generationTimeout = setTimeout(() => {
-                generateQRCode();
-            }, 300); // 300ms delay after last input to generate QR
-        }
-
-        /**
-         * Generates a QR code based on the input text and customization options.
-         * Clears any existing QR code before generating a new one.
-         * Displays the QR code container and download button.
-         */
-        function generateQRCode() {
-            const data = qrInput.value.trim(); // Get input value and trim whitespace
-            const fgColor = fgColorInput.value;
-            const bgColor = bgColorInput.value;
-            const size = parseInt(qrSizeInput.value);
-            const errorCorrection = errorCorrectionSelect.value;
-
-            // Show loading spinner and hide QR code
-            qrCodeDiv.classList.add('hidden');
-            loadingSpinner.classList.remove('hidden');
-
-            // Set a small timeout to show the spinner before generation,
-            // simulating a slight delay for complex operations.
-            setTimeout(() => {
-                // Check if input data is empty
-                if (data === "") {
-                    customAlert("කරුණාකර QR කේතය සඳහා යම් දත්තයක් ඇතුලත් කරන්න.");
-                    qrCodeContainer.classList.add('hidden'); // Hide container if no data
-                    loadingSpinner.classList.add('hidden');
-                    return;
-                }
-
-                // Clear previous QR code if exists
-                qrCodeDiv.innerHTML = "";
-                if (qrCode) {
-                    qrCode = null; // Reset the QRCode instance
-                }
-
-                try {
-                    // Initialize QRCode.js with customization options
-                    qrCode = new QRCode(qrCodeDiv, {
-                        text: data,
-                        width: size,
-                        height: size,
-                        colorDark: fgColor,
-                        colorLight: bgColor,
-                        correctLevel: QRCode.CorrectLevel[errorCorrection]
-                    });
-
-                    // Show the QR code container and download button
-                    qrCodeContainer.classList.remove('hidden');
-                    qrCodeDiv.classList.remove('hidden'); // Show QR code
-                } catch (error) {
-                    customAlert("QR කේතය ජනනය කිරීමේ දෝෂයක් සිදුවිය: " + error.message);
-                    qrCodeContainer.classList.add('hidden');
-                } finally {
-                    loadingSpinner.classList.add('hidden'); // Hide spinner regardless of success/failure
-                }
-            }, 100); // Short delay to allow spinner to show
-        }
-
-        /**
-         * Clears the input field and hides the generated QR code.
-         */
-        function clearQRCode() {
-            qrInput.value = '';
-            qrCodeDiv.innerHTML = '';
-            qrCode = null;
-            qrCodeContainer.classList.add('hidden');
-            loadingSpinner.classList.add('hidden');
-        }
-
-        /**
-         * Downloads the generated QR code as a PNG image.
-         * Creates a temporary link element and triggers a click to download.
-         */
-        function downloadQRCode() {
-            // Ensure a QR code has been generated
-            if (!qrCode) {
-                customAlert("කරුණාකර පළමුව QR කේතයක් සාදන්න.");
-                return;
-            }
-
-            // QRCode.js renders to a canvas. Get the canvas element.
-            const canvas = qrCodeDiv.querySelector('canvas');
-            if (canvas) {
-                // Create a temporary link element
-                const link = document.createElement('a');
-                link.download = 'qrcode.png'; // Set the download file name
-                // Get data URL of the canvas as PNG, providing a fallback for potential errors
-                try {
-                    link.href = canvas.toDataURL('image/png');
-                    document.body.appendChild(link); // Append to body (required for Firefox)
-                    link.click(); // Programmatically click the link to trigger download
-                    document.body.removeChild(link); // Clean up the temporary link
-                } catch (e) {
-                    customAlert("QR කේතය බාගත කිරීමේ දෝෂයක් සිදුවිය. සමහරවිට බ්‍රවුසර ආරක්ෂක සීමාවන් නිසා විය හැක.");
-                    console.error("Download error:", e);
-                }
-            } else {
-                customAlert("QR කේතය බාගත කිරීමේ දෝෂයක් සිදුවිය. කැන්වසය හමු නොවීය.");
-            }
-        }
-
-        /**
-         * Custom alert function to replace default alert().
-         * Displays a modal message to the user.
-         * @param {string} message - The message to display in the alert.
-         */
-        function customAlert(message) {
-            const existingModal = document.getElementById('customAlertModal');
-            if (existingModal) {
-                existingModal.remove();
-            }
-
-            const modal = document.createElement('div');
-            modal.id = 'customAlertModal';
-            modal.className = 'fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4';
-            modal.innerHTML = `
-                <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm w-full transform transition-all duration-300 scale-95 opacity-0" id="alertContent">
-                    <div class="text-xl font-bold mb-4 text-gray-800">තොරතුරු</div>
-                    <p class="text-gray-700 mb-6">${message}</p>
-                    <button id="alertCloseBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300">
-                        හරි
-                    </button>
-                </div>
-            `;
-            document.body.appendChild(modal);
-
-            // Animate in
-            setTimeout(() => {
-                document.getElementById('alertContent').classList.remove('scale-95', 'opacity-0');
-                document.getElementById('alertContent').classList.add('scale-100', 'opacity-100');
-            }, 50);
-
-
-            document.getElementById('alertCloseBtn').addEventListener('click', () => {
-                // Animate out
-                document.getElementById('alertContent').classList.remove('scale-100', 'opacity-100');
-                document.getElementById('alertContent').classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    modal.remove();
-                }, 300); // Match transition duration
             });
 
-            // Close when clicking outside the modal content
-            modal.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                     // Animate out
-                    document.getElementById('alertContent').classList.remove('scale-100', 'opacity-100');
-                    document.getElementById('alertContent').classList.add('scale-95', 'opacity-0');
-                    setTimeout(() => {
-                        modal.remove();
-                    }, 300); // Match transition duration
-                }
+            downloadBtn.addEventListener('click', () => {
+                const extension = 'png';
+                qrCode.download({ name: 'qrcode', extension });
             });
-        }
+            
+            // --- Initial Load and Resize Handling ---
+            window.addEventListener('resize', resizeQRCode);
+            
+            qrCode.append(canvasWrapper);
+            resizeQRCode(); // Set initial size
+            generateQRCode(); // Generate the first QR code with default values
+        });
     </script>
 </body>
 </html>
