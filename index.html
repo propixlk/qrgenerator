@@ -1,363 +1,366 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="si">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uni Help - Welcome</title>
-    <!-- Tailwind CSS for styling -->
+    <title>දියුණු QR කේත උත්පාදකය</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
+    <!-- QRCode.js library CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js"></script>
+    <!-- Inter font from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- CryptoJS for Password Hashing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .telegram-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3), 0 4px 6px -2px rgba(59, 130, 246, 0.2);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%); /* Blue-purple gradient background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem; /* Equivalent to p-6 */
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* Equivalent to rounded-3xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Equivalent to shadow-xl */
+            width: 100%;
+            max-width: 32rem; /* Equivalent to max-w-xl */
+            padding: 2.5rem; /* Equivalent to p-10 */
+        }
+        /* Custom styles for the QR code canvas */
+        #qrcode canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 0.75rem; /* Apply rounded corners to the canvas */
+            transition: transform 0.3s ease-in-out;
+        }
+        #qrcode canvas:hover {
+            transform: scale(1.02);
+        }
+
+        /* Styling for range input thumb */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #2575fc;
+            cursor: pointer;
+            box-shadow: 0 0 0 4px rgba(37, 117, 252, 0.3);
+            transition: background 0.3s ease-in-out;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #2575fc;
+            cursor: pointer;
+            box-shadow: 0 0 0 4px rgba(37, 117, 252, 0.3);
+            transition: background 0.3s ease-in-out;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #1a5acb;
+        }
+        input[type="range"]::-moz-range-thumb:hover {
+            background: #1a5acb;
+        }
+
+        /* Loading spinner */
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+<body>
+    <div class="container">
+        <h1 class="text-4xl font-extrabold text-center mb-8 text-gray-800">දියුණු QR කේත උත්පාදකය</h1>
 
-    <div id="app-container" class="w-full max-w-md p-4">
-
-        <!-- Auth Section: Login/Signup -->
-        <div id="auth-section" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg w-full">
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Uni Help</h1>
-                <p class="text-gray-500 dark:text-gray-400" id="form-title">Welcome Back! Please login.</p>
-            </div>
-
-            <!-- Login Form -->
-            <form id="login-form" class="space-y-6">
-                <!-- Form content similar to previous version -->
-                <div>
-                    <label for="login-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
-                    <input type="email" id="login-email" required class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="you@example.com">
-                </div>
-                <div>
-                    <label for="login-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-                    <input type="password" id="login-password" required class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="••••••••">
-                </div>
-                <div class="flex items-center justify-between">
-                    <a href="#" id="forgot-password-link" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Forgot Password?</a>
-                </div>
-                <div>
-                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300">Login</button>
-                </div>
-            </form>
-
-            <!-- Signup Form (hidden by default) -->
-            <form id="signup-form" class="hidden space-y-6">
-                <!-- Form content similar to previous version -->
-                 <div>
-                    <label for="signup-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
-                    <input type="email" id="signup-email" required class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="you@example.com">
-                </div>
-                <div>
-                    <label for="signup-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Create Password</label>
-                    <input type="password" id="signup-password" required minlength="6" class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="Minimum 6 characters">
-                </div>
-                 <div>
-                    <label for="department" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
-                    <select id="department" required class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gamma-ray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white">
-                        <option value="" disabled selected>-- Choose your department --</option>
-                        <option value="ict">Information & Communication Technology</option>
-                        <option value="bms">Business & Management Studies</option>
-                        <option value="et">Engineering Technology</option>
-                        <option value="bst">Biosystems Technology</option>
-                    </select>
-                </div>
-                <div>
-                    <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300">Create Account</button>
-                </div>
-            </form>
-
-            <!-- Password Reset Form (hidden by default) -->
-            <form id="reset-password-form" class="hidden space-y-6">
-                 <p class="text-center text-gray-600 dark:text-gray-300">Create a new password for your account.</p>
-                <div>
-                    <label for="reset-password-new" class="block text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
-                    <input type="password" id="reset-password-new" required minlength="6" class="mt-1 block w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg" placeholder="Minimum 6 characters">
-                </div>
-                <div>
-                    <button type="submit" class="w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600">Reset Password</button>
-                </div>
-            </form>
-            
-            <div id="auth-toggle" class="mt-6 text-center">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    <span id="toggle-text">Don't have an account?</span>
-                    <a href="#" id="toggle-link" class="font-medium text-blue-600 dark:text-blue-400 hover:underline">Sign Up</a>
-                </p>
-            </div>
-            <div id="message-box" class="mt-4 text-center text-sm font-medium p-3 rounded-lg hidden"></div>
+        <!-- Input Section -->
+        <div class="mb-6">
+            <label for="qrInput" class="block text-gray-700 text-base font-medium mb-2">QR කේතය සඳහා දත්ත ඇතුලත් කරන්න:</label>
+            <textarea id="qrInput" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-200 transition duration-300 ease-in-out resize-y min-h-[100px] text-gray-800 placeholder-gray-400" placeholder="උදා: https://www.google.com, ඔබගේ පෙළ, හෝ යම් තොරතුරක්..."></textarea>
         </div>
 
-        <!-- Department Page (Hidden by default) -->
-        <div id="department-section" class="hidden text-center">
-            <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg w-full">
-                <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Welcome!</h2>
-                <p id="department-info" class="mt-2 text-lg text-gray-600 dark:text-gray-300">You are logged in.</p>
-                <button id="logout-button" class="mt-6 w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700">Logout</button>
+        <!-- Customization Options -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <!-- Foreground Color -->
+            <div>
+                <label for="fgColor" class="block text-gray-700 text-sm font-medium mb-2">පෙරබිම් වර්ණය:</label>
+                <input type="color" id="fgColor" value="#000000" class="w-full h-10 p-1 border border-gray-300 rounded-lg cursor-pointer">
+            </div>
+            <!-- Background Color -->
+            <div>
+                <label for="bgColor" class="block text-gray-700 text-sm font-medium mb-2">පසුබිම් වර්ණය:</label>
+                <input type="color" id="bgColor" value="#ffffff" class="w-full h-10 p-1 border border-gray-300 rounded-lg cursor-pointer">
+            </div>
+            <!-- Size -->
+            <div class="col-span-1 md:col-span-2">
+                <label for="qrSize" class="block text-gray-700 text-sm font-medium mb-2">QR කේත ප්‍රමාණය (<span id="qrSizeValue">256</span>px):</label>
+                <input type="range" id="qrSize" min="100" max="500" value="256" step="10" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            </div>
+            <!-- Error Correction Level -->
+            <div>
+                <label for="errorCorrection" class="block text-gray-700 text-sm font-medium mb-2">දෝෂ නිවැරදි කිරීමේ මට්ටම:</label>
+                <select id="errorCorrection" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-200 transition duration-300 ease-in-out text-gray-800">
+                    <option value="L">L (7%)</option>
+                    <option value="M">M (15%)</option>
+                    <option value="Q">Q (25%)</option>
+                    <option value="H" selected>H (30%)</option>
+                </select>
             </div>
         </div>
-    </div>
-    
-    <!-- Telegram Modal -->
-    <div id="telegram-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
-        <!-- Modal content similar to previous version -->
-         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center transform transition-all scale-95 opacity-0" id="modal-content">
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Join Our Community!</h3>
-            <p class="mt-4 text-gray-600 dark:text-gray-300">Get the latest notes, timetables, and updates directly on our Telegram channel.</p>
-            <a href="https://t.me/your_telegram_group" target="_blank" class="telegram-button mt-8 inline-block w-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-transform duration-300 ease-in-out">
-                Join Telegram Group
-            </a>
-            <button id="close-modal" class="mt-4 w-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium py-2 rounded-lg">Maybe later</button>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+            <button id="generateBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                QR කේතය සාදන්න
+            </button>
+            <button id="clearBtn" class="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                පැහැදිලි කරන්න
+            </button>
+        </div>
+
+        <!-- QR Code Display Section -->
+        <div id="qrCodeContainer" class="mt-8 text-center hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">ඔබගේ QR කේතය:</h2>
+            <div id="loadingSpinner" class="loader hidden"></div>
+            <div id="qrcode" class="bg-gray-100 p-4 rounded-xl inline-block transition duration-300 ease-in-out">
+                <!-- QR code will be rendered here by JavaScript -->
+            </div>
+            <!-- Download Button -->
+            <button id="downloadBtn" class="mt-8 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300">
+                QR කේතය බාගන්න
+            </button>
         </div>
     </div>
 
     <script>
-        // --- Configuration ---
-        const SCRIPT_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL"; // <-- PASTE YOUR DEPLOYED APPS SCRIPT URL HERE
+        // Get references to DOM elements
+        const qrInput = document.getElementById('qrInput');
+        const fgColorInput = document.getElementById('fgColor');
+        const bgColorInput = document.getElementById('bgColor');
+        const qrSizeInput = document.getElementById('qrSize');
+        const qrSizeValueSpan = document.getElementById('qrSizeValue');
+        const errorCorrectionSelect = document.getElementById('errorCorrection');
+        const generateBtn = document.getElementById('generateBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+        const qrCodeDiv = document.getElementById('qrcode');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
 
-        // --- DOM Elements ---
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const resetPasswordForm = document.getElementById('reset-password-form');
-        const toggleLink = document.getElementById('toggle-link');
-        const formTitle = document.getElementById('form-title');
-        const toggleText = document.getElementById('toggle-text');
-        const messageBox = document.getElementById('message-box');
-        const authSection = document.getElementById('auth-section');
-        const departmentSection = document.getElementById('department-section');
-        const departmentInfo = document.getElementById('department-info');
-        const logoutButton = document.getElementById('logout-button');
-        const forgotPasswordLink = document.getElementById('forgot-password-link');
-        const authToggle = document.getElementById('auth-toggle');
+        let qrCode = null; // Variable to hold the QRCode.js instance
+        let generationTimeout; // To debounce QR code generation
 
-        // --- Page Load Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const resetToken = urlParams.get('reset_token');
-            
-            if (resetToken) {
-                showResetPasswordForm(resetToken);
-            } else {
-                checkLoginStatus();
+        /**
+         * Initializes the QR code generator on window load.
+         * Sets up event listeners for inputs and buttons.
+         */
+        window.onload = function() {
+            // Update QR code size value display when slider moves
+            qrSizeInput.addEventListener('input', () => {
+                qrSizeValueSpan.textContent = qrSizeInput.value;
+                debounceGenerateQRCode(); // Regenerate QR on size change
+            });
+
+            // Event listeners for input changes to trigger live generation (debounced)
+            qrInput.addEventListener('input', debounceGenerateQRCode);
+            fgColorInput.addEventListener('input', debounceGenerateQRCode);
+            bgColorInput.addEventListener('input', debounceGenerateQRCode);
+            errorCorrectionSelect.addEventListener('change', debounceGenerateQRCode);
+
+            // Event listener for the Generate QR Code button (for explicit generation)
+            generateBtn.addEventListener('click', generateQRCode);
+
+            // Event listener for the Clear button
+            clearBtn.addEventListener('click', clearQRCode);
+
+            // Event listener for the Download QR Code button
+            downloadBtn.addEventListener('click', downloadQRCode);
+
+            // Initial generation if there's any default text
+            if (qrInput.value.trim() !== "") {
+                generateQRCode();
             }
-        });
+        };
 
-        function checkLoginStatus() {
-            const user = sessionStorage.getItem('uni-help-user');
-            if (user) {
-                const userData = JSON.parse(user);
-                showDepartmentPage(userData.department);
-            } else {
-                showAuthPage('login');
-            }
+        /**
+         * Debounces the QR code generation function to prevent excessive calls
+         * when multiple inputs change rapidly (e.g., typing in textarea or dragging slider).
+         */
+        function debounceGenerateQRCode() {
+            clearTimeout(generationTimeout);
+            generationTimeout = setTimeout(() => {
+                generateQRCode();
+            }, 300); // 300ms delay after last input to generate QR
         }
 
-        // --- UI Control ---
-        function showMessage(message, isError = false, duration = 5000) {
-            messageBox.textContent = message;
-            messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
-            messageBox.classList.add(isError ? 'bg-red-100' : 'bg-green-100', isError ? 'text-red-700' : 'text-green-700');
-            setTimeout(() => messageBox.classList.add('hidden'), duration);
+        /**
+         * Generates a QR code based on the input text and customization options.
+         * Clears any existing QR code before generating a new one.
+         * Displays the QR code container and download button.
+         */
+        function generateQRCode() {
+            const data = qrInput.value.trim(); // Get input value and trim whitespace
+            const fgColor = fgColorInput.value;
+            const bgColor = bgColorInput.value;
+            const size = parseInt(qrSizeInput.value);
+            const errorCorrection = errorCorrectionSelect.value;
+
+            // Show loading spinner and hide QR code
+            qrCodeDiv.classList.add('hidden');
+            loadingSpinner.classList.remove('hidden');
+
+            // Set a small timeout to show the spinner before generation,
+            // simulating a slight delay for complex operations.
+            setTimeout(() => {
+                // Check if input data is empty
+                if (data === "") {
+                    customAlert("කරුණාකර QR කේතය සඳහා යම් දත්තයක් ඇතුලත් කරන්න.");
+                    qrCodeContainer.classList.add('hidden'); // Hide container if no data
+                    loadingSpinner.classList.add('hidden');
+                    return;
+                }
+
+                // Clear previous QR code if exists
+                qrCodeDiv.innerHTML = "";
+                if (qrCode) {
+                    qrCode = null; // Reset the QRCode instance
+                }
+
+                try {
+                    // Initialize QRCode.js with customization options
+                    qrCode = new QRCode(qrCodeDiv, {
+                        text: data,
+                        width: size,
+                        height: size,
+                        colorDark: fgColor,
+                        colorLight: bgColor,
+                        correctLevel: QRCode.CorrectLevel[errorCorrection]
+                    });
+
+                    // Show the QR code container and download button
+                    qrCodeContainer.classList.remove('hidden');
+                    qrCodeDiv.classList.remove('hidden'); // Show QR code
+                } catch (error) {
+                    customAlert("QR කේතය ජනනය කිරීමේ දෝෂයක් සිදුවිය: " + error.message);
+                    qrCodeContainer.classList.add('hidden');
+                } finally {
+                    loadingSpinner.classList.add('hidden'); // Hide spinner regardless of success/failure
+                }
+            }, 100); // Short delay to allow spinner to show
         }
 
-        toggleLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            const isShowingLogin = !loginForm.classList.contains('hidden');
-            showAuthPage(isShowingLogin ? 'signup' : 'login');
-        });
-
-        function showAuthPage(formToShow) {
-            authSection.classList.remove('hidden');
-            departmentSection.classList.add('hidden');
-            loginForm.classList.add('hidden');
-            signupForm.classList.add('hidden');
-            resetPasswordForm.classList.add('hidden');
-            authToggle.classList.remove('hidden');
-
-            if (formToShow === 'signup') {
-                signupForm.classList.remove('hidden');
-                formTitle.textContent = 'Create a New Account';
-                toggleText.textContent = 'Already have an account?';
-                toggleLink.textContent = 'Login';
-            } else if (formToShow === 'login') {
-                loginForm.classList.remove('hidden');
-                formTitle.textContent = 'Welcome Back! Please login.';
-                toggleText.textContent = "Don't have an account?";
-                toggleLink.textContent = 'Sign Up';
-            } else if (formToShow === 'reset') {
-                 resetPasswordForm.classList.remove('hidden');
-                 formTitle.textContent = 'Reset Your Password';
-                 authToggle.classList.add('hidden');
-            }
-        }
-        
-        function showDepartmentPage(department) {
-            const departmentName = getDepartmentFullName(department);
-            departmentInfo.textContent = `Welcome to the ${departmentName} section.`;
-            authSection.classList.add('hidden');
-            departmentSection.classList.remove('hidden');
-            showTelegramModal();
-        }
-        
-        function showResetPasswordForm(token) {
-            showAuthPage('reset');
-            resetPasswordForm.dataset.token = token;
+        /**
+         * Clears the input field and hides the generated QR code.
+         */
+        function clearQRCode() {
+            qrInput.value = '';
+            qrCodeDiv.innerHTML = '';
+            qrCode = null;
+            qrCodeContainer.classList.add('hidden');
+            loadingSpinner.classList.add('hidden');
         }
 
-        // --- Event Handlers ---
-        signupForm.addEventListener('submit', handleSignup);
-        loginForm.addEventListener('submit', handleLogin);
-        logoutButton.addEventListener('click', handleLogout);
-        forgotPasswordLink.addEventListener('click', handleForgotPassword);
-        resetPasswordForm.addEventListener('submit', handleResetPassword);
-
-        // --- Action Handlers (Communicate with Apps Script) ---
-
-        async function handleSignup(e) {
-            e.preventDefault();
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            const department = document.getElementById('department').value;
-
-            if (!department) {
-                showMessage('Please choose your department.', true);
-                return;
-            }
-            
-            const passwordHash = CryptoJS.SHA256(password).toString();
-            const payload = { action: 'signup', email, passwordHash, department };
-            
-            showMessage('Creating account...', false);
-            const response = await postData(payload);
-
-            if (response.status === 'success') {
-                showMessage('Account created! Please login.', false);
-                showAuthPage('login');
-            } else {
-                showMessage(response.message || 'An unknown error occurred.', true);
-            }
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            const passwordHash = CryptoJS.SHA256(password).toString();
-            const payload = { action: 'login', email, passwordHash };
-
-            showMessage('Logging in...', false);
-            const response = await postData(payload);
-
-            if (response.status === 'success') {
-                sessionStorage.setItem('uni-help-user', JSON.stringify(response));
-                showDepartmentPage(response.department);
-            } else {
-                showMessage(response.message || 'Invalid email or password.', true);
-            }
-        }
-        
-        async function handleForgotPassword(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            if (!email) {
-                showMessage('Please enter your email to reset password.', true);
-                return;
-            }
-            // The reset link will point back to the current page
-            const resetPageUrl = window.location.href.split('?')[0];
-
-            const payload = { action: 'forgotPassword', email, resetPageUrl };
-            showMessage('Processing...', false);
-            const response = await postData(payload);
-            showMessage(response.message, response.status !== 'success');
-        }
-
-        async function handleResetPassword(e) {
-            e.preventDefault();
-            const newPassword = document.getElementById('reset-password-new').value;
-            const token = resetPasswordForm.dataset.token;
-            
-            if (newPassword.length < 6) {
-                showMessage('Password must be at least 6 characters long.', true);
+        /**
+         * Downloads the generated QR code as a PNG image.
+         * Creates a temporary link element and triggers a click to download.
+         */
+        function downloadQRCode() {
+            // Ensure a QR code has been generated
+            if (!qrCode) {
+                customAlert("කරුණාකර පළමුව QR කේතයක් සාදන්න.");
                 return;
             }
 
-            const newPasswordHash = CryptoJS.SHA256(newPassword).toString();
-            const payload = { action: 'resetPassword', token, newPasswordHash };
-            
-            showMessage('Resetting password...', false);
-            const response = await postData(payload);
-
-            if (response.status === 'success') {
-                showMessage(response.message, false);
-                // Clear token from URL and show login form
-                window.history.replaceState({}, document.title, window.location.pathname);
-                showAuthPage('login');
+            // QRCode.js renders to a canvas. Get the canvas element.
+            const canvas = qrCodeDiv.querySelector('canvas');
+            if (canvas) {
+                // Create a temporary link element
+                const link = document.createElement('a');
+                link.download = 'qrcode.png'; // Set the download file name
+                // Get data URL of the canvas as PNG, providing a fallback for potential errors
+                try {
+                    link.href = canvas.toDataURL('image/png');
+                    document.body.appendChild(link); // Append to body (required for Firefox)
+                    link.click(); // Programmatically click the link to trigger download
+                    document.body.removeChild(link); // Clean up the temporary link
+                } catch (e) {
+                    customAlert("QR කේතය බාගත කිරීමේ දෝෂයක් සිදුවිය. සමහරවිට බ්‍රවුසර ආරක්ෂක සීමාවන් නිසා විය හැක.");
+                    console.error("Download error:", e);
+                }
             } else {
-                showMessage(response.message || 'Failed to reset password.', true);
+                customAlert("QR කේතය බාගත කිරීමේ දෝෂයක් සිදුවිය. කැන්වසය හමු නොවීය.");
             }
         }
 
-        function handleLogout() {
-            sessionStorage.removeItem('uni-help-user');
-            showAuthPage('login');
-        }
-
-        // --- API Call Helper ---
-        async function postData(payload) {
-            try {
-                const res = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    cache: 'no-cache',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Required for Apps Script
-                    body: JSON.stringify(payload)
-                });
-                return await res.json();
-            } catch (error) {
-                console.error('Fetch Error:', error);
-                return { status: 'error', message: 'Could not connect to the server.' };
+        /**
+         * Custom alert function to replace default alert().
+         * Displays a modal message to the user.
+         * @param {string} message - The message to display in the alert.
+         */
+        function customAlert(message) {
+            const existingModal = document.getElementById('customAlertModal');
+            if (existingModal) {
+                existingModal.remove();
             }
-        }
-        
-        // --- Modal Control ---
-        const telegramModal = document.getElementById('telegram-modal');
-        const modalContent = document.getElementById('modal-content');
-        const closeModalButton = document.getElementById('close-modal');
 
-        function showTelegramModal() {
-            telegramModal.classList.remove('hidden');
-            setTimeout(() => { modalContent.classList.remove('scale-95', 'opacity-0'); }, 50);
-        }
-        function hideTelegramModal() {
-            modalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { telegramModal.classList.add('hidden'); }, 300);
-        }
-        closeModalButton.addEventListener('click', hideTelegramModal);
-        telegramModal.addEventListener('click', (e) => { if (e.target === telegramModal) hideTelegramModal(); });
+            const modal = document.createElement('div');
+            modal.id = 'customAlertModal';
+            modal.className = 'fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm w-full transform transition-all duration-300 scale-95 opacity-0" id="alertContent">
+                    <div class="text-xl font-bold mb-4 text-gray-800">තොරතුරු</div>
+                    <p class="text-gray-700 mb-6">${message}</p>
+                    <button id="alertCloseBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        හරි
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Animate in
+            setTimeout(() => {
+                document.getElementById('alertContent').classList.remove('scale-95', 'opacity-0');
+                document.getElementById('alertContent').classList.add('scale-100', 'opacity-100');
+            }, 50);
 
 
-        // --- Helper Functions ---
-        function getDepartmentFullName(deptCode) {
-            const departments = {
-                'ict': 'Information & Communication Technology',
-                'bms': 'Business & Management Studies',
-                'et': 'Engineering Technology',
-                'bst': 'Biosystems Technology'
-            };
-            return departments[deptCode] || 'General';
-        }
+            document.getElementById('alertCloseBtn').addEventListener('click', () => {
+                // Animate out
+                document.getElementById('alertContent').classList.remove('scale-100', 'opacity-100');
+                document.getElementById('alertContent').classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.remove();
+                }, 300); // Match transition duration
+            });
 
+            // Close when clicking outside the modal content
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                     // Animate out
+                    document.getElementById('alertContent').classList.remove('scale-100', 'opacity-100');
+                    document.getElementById('alertContent').classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        modal.remove();
+                    }, 300); // Match transition duration
+                }
+            });
+        }
     </script>
 </body>
 </html>
