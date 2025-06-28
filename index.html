@@ -218,7 +218,6 @@
             const canvasWrapper = document.getElementById('canvas');
             const canvasContainer = document.getElementById('canvas-container');
             const qrLoader = document.getElementById('qr-loader');
-            // UPDATED DOM Elements for Download
             const formatSelect = document.getElementById('format-select');
             const downloadBtn = document.getElementById('download-btn');
 
@@ -289,7 +288,6 @@
             // --- QR Code Generation with Loading Animation ---
             const generateQRCode = () => {
                 showQrLoader();
-                // Use a short timeout to ensure the loader is visible before the QR code generation starts
                 setTimeout(() => {
                     canvasWrapper.style.backgroundColor = colorLightInput.value;
                     qrCode.update({
@@ -300,7 +298,7 @@
                         image: uploadedImage || ''
                     });
                     hideQrLoader();
-                }, 50); // 50ms delay
+                }, 50);
             };
 
             // --- Event Listeners ---
@@ -328,28 +326,36 @@
                 generateQRCode();
             });
 
-            // --- UPDATED Download Logic ---
+            // --- FIXED Download Logic ---
             downloadBtn.addEventListener('click', () => {
                 const format = formatSelect.value;
-                const fileName = 'qrcode'; // Default file name
+                const fileName = 'qrcode';
 
                 if (format === 'pdf') {
-                    // PDF Download
-                    const qrElement = canvasWrapper.firstChild; // The SVG or Canvas element
-                    if (!qrElement) return;
+                    // For PDF, we capture the container DIV, not just the SVG.
+                    // This is more reliable and includes the background color and padding.
+                    const qrCodeContainer = canvasWrapper;
+                    
+                    if (!qrCodeContainer) return;
 
-                    html2canvas(qrElement, { 
-                        backgroundColor: colorLightInput.value,
-                        width: qrElement.width.baseVal.value,
-                        height: qrElement.height.baseVal.value
+                    html2canvas(qrCodeContainer, {
+                        // Increase scale for better PDF quality.
+                        scale: 2, 
                     }).then(canvas => {
-                        const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                        const pdf = new jsPDF({ orientation: 'p', unit: 'px', format: [canvas.width, canvas.height] });
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        
+                        // Create a PDF with dimensions matching the captured canvas.
+                        const pdf = new jsPDF({
+                            orientation: 'portrait',
+                            unit: 'px',
+                            format: [canvas.width, canvas.height]
+                        });
+
                         pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
                         pdf.save(`${fileName}.pdf`);
                     });
                 } else {
-                    // Standard Download (PNG, JPG, SVG, WEBP)
+                    // Standard download for PNG, JPG, SVG, WEBP
                     qrCode.download({ name: fileName, extension: format });
                 }
             });
